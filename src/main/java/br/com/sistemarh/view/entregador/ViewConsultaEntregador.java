@@ -2,10 +2,13 @@ package br.com.sistemarh.view.entregador;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.Serializable;
+import java.text.ParseException;
 
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -16,6 +19,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.MaskFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -24,14 +28,13 @@ import org.springframework.stereotype.Component;
 import br.com.sistemarh.client.EntregadorClient;
 import br.com.sistemarh.dto.Entregador;
 import br.com.sistemarh.dto.Paginacao;
+import br.com.sistemarh.enums.Status;
 import br.com.sistemarh.view.componentes.table.TabelaEntregadores;
 import br.com.sistemarh.view.componentes.textfield.RoundJTextField;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.NotBlank;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 @Component
 public class ViewConsultaEntregador extends JFrame implements Serializable {
@@ -46,11 +49,11 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 
 	private RoundJTextField edtNome;
 	
-	private RoundJTextField edtTelefone;
+	private JFormattedTextField edtTelefone;
 	
 	private RoundJTextField edtCNH;
 	
-	private RoundJTextField edtCPF;
+	private JFormattedTextField edtCPF;
 	
 	private JPanel panelInformacoes;
 	
@@ -80,6 +83,8 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 	@PostConstruct
 	private void inicializar() {
 		this.configurarTabela();
+		this.formatarCampoCPF();
+		this.formatarCampoTelefone();
 	}
 	
 	public void mostrarTela(
@@ -110,6 +115,24 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 
 	}
 	
+    private void formatarCampoTelefone() {
+        try {
+            MaskFormatter maskTelefone = new MaskFormatter("(##)#####-####");
+            maskTelefone.install(edtTelefone);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void formatarCampoCPF() {
+        try {
+            MaskFormatter maskCPF = new MaskFormatter("###.###.###-##");
+            maskCPF.install(edtCPF);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+	
 	private void configurarColuna(int indice, int largura) {
 		this.tbEntregadores.getColumnModel().getColumn(indice).setResizable(true);
 		this.tbEntregadores.getColumnModel().getColumn(indice).setPreferredWidth(largura);
@@ -118,6 +141,7 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 	private void configurarTabela() {
 		final int COLUNA_ID = 0;
 		final int COLUNA_NOME = 1;
+		final int COLUNA_STATUS = 5;
 		this.tbEntregadores.getTableHeader().setReorderingAllowed(false);
 		this.tbEntregadores.getTableHeader().setResizingAllowed(false);;
 		this.tbEntregadores.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -126,6 +150,7 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 	    this.tbEntregadores.getTableHeader().setFont(fonteCabecalho);
 		this.configurarColuna(COLUNA_ID, 25);
 		this.configurarColuna(COLUNA_NOME, 150);
+		this.configurarColuna(COLUNA_STATUS, 5);
 	}
 
 	/**
@@ -183,7 +208,7 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 		lblCpf.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblCpf.setBackground(new Color(0, 47, 109));
 		
-		edtTelefone = new RoundJTextField(0);
+		edtTelefone = new JFormattedTextField();
 		edtTelefone.setBounds(16, 115, 350, 25);
 		panelInformacoes.add(edtTelefone);
 		
@@ -191,7 +216,7 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 		edtCNH.setBounds(515, 52, 350, 25);
 		panelInformacoes.add(edtCNH);
 		
-		edtCPF = new RoundJTextField(0);
+		edtCPF = new JFormattedTextField();
 		edtCPF.setBounds(515, 115, 350, 25);
 		panelInformacoes.add(edtCPF);
 		
@@ -230,6 +255,19 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 		btnNovo.setBackground(new Color(0, 47, 109));
 		
 		JButton btnAlterar = new JButton("Alterar");
+		btnAlterar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int linhaSelecionada = tbEntregadores.getSelectedRow();
+				if (linhaSelecionada >= 0) {
+					TabelaEntregadores model = (TabelaEntregadores)tbEntregadores.getModel();
+					Entregador entregadorSelecionado = model.getPor(linhaSelecionada);
+					viewCadastro.colocarEmModoDeEdicao(tokenDeAcesso, entregadorSelecionado);
+					dispose();
+				}else {
+					JOptionPane.showMessageDialog(contentPane, "Selecione um entregador para edição");
+				}
+			}							
+		});
 		btnAlterar.setBounds(230, 16, 100, 25);
 		panelAcoes.add(btnAlterar);
 		btnAlterar.setToolTipText("Clique aqui para alterar um entregador já existente");
@@ -238,6 +276,48 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 		btnAlterar.setBackground(new Color(0, 47, 109));
 		
 		JButton btnDesativar = new JButton("Desativar");
+		btnDesativar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int linhaSelecionada = tbEntregadores.getSelectedRow();
+				
+				if (linhaSelecionada >= 0) {
+
+					int opcao = JOptionPane.showConfirmDialog(contentPane, 
+							"Deseja atualizar o status da categoria selecionada?", 
+							"Atualização", JOptionPane.YES_NO_OPTION);
+
+					boolean isConfirmacaoRealizada = opcao == 0;
+
+					if (isConfirmacaoRealizada) {
+						
+						try {
+							TabelaEntregadores model = (TabelaEntregadores)tbEntregadores.getModel();
+							Entregador entregadorSelecionado = model.getPor(linhaSelecionada);
+							Status novoStatus = entregadorSelecionado.isAtivo() ? Status.I : Status.A;
+							entregadorClient.atualizarPor(entregadorSelecionado.getId(), novoStatus);
+							listarEntregadores(paginaAtual);
+							JOptionPane.showMessageDialog(contentPane, "O status do entregador foi atualizado com sucesso", 
+									"Sucesso na Remoção", JOptionPane.INFORMATION_MESSAGE);
+						}catch (ConstraintViolationException cve) {
+							StringBuilder msgErro = new StringBuilder("Os seguintes erros ocorreram:\n");			
+							for (ConstraintViolation<?> cv : cve.getConstraintViolations()) {
+								msgErro.append("  -").append(cv.getMessage()).append("\n");
+							}
+							JOptionPane.showMessageDialog(contentPane, msgErro, 
+									"Falha na Listagem", JOptionPane.ERROR_MESSAGE);
+						}catch (Exception ex) {
+							JOptionPane.showMessageDialog(contentPane, ex.getMessage(),
+									"Erro na Atualização", JOptionPane.ERROR_MESSAGE);
+						}
+						
+					}
+
+				}else {
+					JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para remoção");
+				}
+				
+			}				
+		});
 		btnDesativar.setBounds(340, 17, 100, 25);
 		panelAcoes.add(btnDesativar);
 		btnDesativar.setToolTipText("Clique aqui para desativar um entregador existente");

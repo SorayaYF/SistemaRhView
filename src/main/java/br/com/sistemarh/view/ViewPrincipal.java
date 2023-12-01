@@ -62,8 +62,7 @@ public class ViewPrincipal extends JFrame implements Serializable {
 		JMenuItem miEntregadores = new JMenuItem("Entregadores");
 		miEntregadores.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				viewConsultaEntregador.setVisible(true);
-				/* viewConsultaEntregador.mostrarTela(tokenDeAcesso); */
+				viewConsultaEntregador.mostrarTela(tokenDeAcesso);
 			}
 		});
 		miEntregadores.setForeground(new Color(255, 255, 255));
@@ -73,9 +72,7 @@ public class ViewPrincipal extends JFrame implements Serializable {
 		JMenuItem miFrete = new JMenuItem("Frete");
 		miFrete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				viewDadosDoGrafico = new ViewDadosDoGrafico();
-				viewDadosDoGrafico.setVisible(true);
-				/* viewFrete.mostrarTela(tokenDeAcesso); */
+				viewDadosDoGrafico.mostrarTela(tokenDeAcesso);
 			}
 		});
 		miFrete.setForeground(new Color(255, 255, 255));
@@ -85,9 +82,7 @@ public class ViewPrincipal extends JFrame implements Serializable {
 		JMenuItem miPagamento = new JMenuItem("Pagamento");
 		miPagamento.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				viewRepasse = new ViewRepasse();
-				viewRepasse.setVisible(true);
-				/* viewPagamento.mostrarTela(tokenDeAcesso); */
+				viewRepasse.mostrarTela(tokenDeAcesso);
 
 			}
 		});

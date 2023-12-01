@@ -22,7 +22,7 @@ public class ViewRepasse extends JFrame implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField edtAno;
 
 	/**
 	 * Create the frame.
@@ -54,10 +54,10 @@ public class ViewRepasse extends JFrame implements Serializable {
 		lblAno.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblAno.setBackground(new Color(0, 47, 109));
 		
-		textField = new JTextField();
-		textField.setBounds(66, 28, 86, 20);
-		panel_1.add(textField);
-		textField.setColumns(10);
+		edtAno = new JTextField();
+		edtAno.setBounds(66, 28, 86, 20);
+		panel_1.add(edtAno);
+		edtAno.setColumns(10);
 		
 		JLabel lblMs = new JLabel("Mês:");
 		lblMs.setBounds(18, 60, 38, 20);
@@ -66,20 +66,9 @@ public class ViewRepasse extends JFrame implements Serializable {
 		lblMs.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblMs.setBackground(new Color(0, 47, 109));
 		
-		JLabel lblTipoDeRelatrio = new JLabel("Tipo de Relatório:");
-		lblTipoDeRelatrio.setBounds(165, 60, 115, 20);
-		panel_1.add(lblTipoDeRelatrio);
-		lblTipoDeRelatrio.setForeground(Color.WHITE);
-		lblTipoDeRelatrio.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblTipoDeRelatrio.setBackground(new Color(0, 47, 109));
-		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(66, 59, 86, 22);
-		panel_1.add(comboBox);
-		
-		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setBounds(290, 59, 128, 22);
-		panel_1.add(comboBox_1);
+		JComboBox cbMes = new JComboBox();
+		cbMes.setBounds(66, 59, 86, 22);
+		panel_1.add(cbMes);
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(new Color(0, 45, 109));
@@ -93,9 +82,14 @@ public class ViewRepasse extends JFrame implements Serializable {
 		panel_2.add(panel);
 		
 		JLabel lblNewLabel_1 = new JLabel("");
-		lblNewLabel_1.setIcon(new ImageIcon("C:\\Users\\soraya_farag\\Downloads\\icons8-correio-51 (2).png"));
+		lblNewLabel_1.setIcon(new ImageIcon(ViewRepasse.class.getResource("/br/com/sistemarh/view/componentes/img/IconeEntregadorViewPrincipal.png")));
 		lblNewLabel_1.setBounds(202, 284, 51, 51);
 		contentPane.add(lblNewLabel_1);
 		setLocationRelativeTo(null);
+	}
+
+	public void mostrarTela(String tokenDeAcesso) {
+		// TODO Auto-generated method stub
+		
 	}
 }

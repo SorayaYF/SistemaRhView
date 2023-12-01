@@ -2,6 +2,8 @@ package br.com.sistemarh.view.relatorio;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.Serializable;
 
 import javax.swing.ImageIcon;
@@ -17,8 +19,11 @@ import javax.swing.border.TitledBorder;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import br.com.sistemarh.client.DadosDoGraficoClient;
+import br.com.sistemarh.dto.DadosDoGrafico;
 import br.com.sistemarh.view.componentes.grafico.GraficoDeBarras;
 import jakarta.validation.constraints.NotBlank;
 
@@ -29,41 +34,52 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 	
 	private JPanel contentPane;
 	
-	private JTextField textField;
+	private JTextField edtAno;
 	
 	private JPanel pnlGrafico;
 	
+	private JComboBox cbMes;
+	
 	private String tokenDeAcesso;
 	
-	/*
-	 * public void mostrarTela(
-	 * 
-	 * @NotBlank(message = "O token de acesso é obrigatório") String tokenDeAcesso)
-	 * { this.setVisible(true); this.tokenDeAcesso = tokenDeAcesso;
-	 * this.DadosDoGrafico.setTokenDeAcesso(tokenDeAcesso); }
-	 */
+	@Autowired
+	private DadosDoGraficoClient dadosDoGraficoClient;
 	
-	private void plotarGrafico() {
-		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-		//Fazer um for que percorre os meses
-		dataset.addValue(110, "Janeiro", "Valor Pago(R$)");
-		dataset.addValue(20, "Feveiro", "Valor Pago(R$)");
-		dataset.addValue(90, "Março", "Valor Pago(R$)");
-		dataset.addValue(40, "Abril", "Valor Pago(R$)");
-		dataset.addValue(50, "Maio", "Valor Pago(R$)");
-		dataset.addValue(120, "Junho", "Valor Pago(R$)");
-		dataset.addValue(70, "Julho", "Valor Pago(R$)");
-		dataset.addValue(100, "Agosto", "Valor Pago(R$)");
-		dataset.addValue(30, "Setembro", "Valor Pago(R$)");
-		dataset.addValue(80, "Outubro", "Valor Pago(R$)");
-		dataset.addValue(10, "Novembro", "Valor Pago(R$)");
-		dataset.addValue(60, "Dezembro", "Valor Pago(R$)");
-		GraficoDeBarras grafico = new GraficoDeBarras();
-		ChartPanel pnlBarras = grafico.plotarPor(dataset, 
-				"Pagamentos Mensais", "", "Mês", 914, 450, 0, 0);
-		pnlGrafico.add(pnlBarras);
-		
+	public void mostrarTela(
+			@NotBlank(message = "O token de acesso é obrigatório")
+			String tokenDeAcesso) {
+		this.setVisible(true);
+		this.tokenDeAcesso = tokenDeAcesso;
+		this.dadosDoGraficoClient.setTokenDeAcesso(tokenDeAcesso);
+	} 
+	
+	private static String obterNomeMes(int numeroMes) {
+	    String[] nomesMeses = {
+	            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+	            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+	    };
+	    return nomesMeses[numeroMes - 1];
 	}
+	
+	private void plotarGrafico(DadosDoGrafico dados) {
+	    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+	    dataset.addValue(dados.getVolumeMovimentadoDeRepasses(), obterNomeMes(dados.getMes()), "Valor Pago(R$)");
+
+	    GraficoDeBarras grafico = new GraficoDeBarras();
+	    ChartPanel pnlBarras = grafico.plotarPor(dataset,
+	            "Pagamentos Mensais", "", "Mês", 914, 450, 0, 0);
+	    pnlGrafico.removeAll();
+	    pnlGrafico.add(pnlBarras);
+	    pnlGrafico.revalidate();
+	    pnlGrafico.repaint();
+	}
+	
+	private DadosDoGrafico obterDadosDoGrafico(Integer ano, Integer mes) {
+	    return dadosDoGraficoClient.obterDadosDoGrafico(ano, mes);
+	}
+
+
 
 	public ViewDadosDoGrafico() {
 		setResizable(false);
@@ -86,6 +102,16 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 		contentPane.add(panel_1_1);
 		
 		JButton btnGerar = new JButton("Gerar");
+		btnGerar.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        Integer anoSelecionado = Integer.parseInt(edtAno.getText());
+		        Integer mesSelecionado = cbMes.getSelectedIndex() + 1; 
+
+		        DadosDoGrafico dados = obterDadosDoGrafico(anoSelecionado, mesSelecionado);
+
+		        plotarGrafico(dados);
+		    }
+		});
 		btnGerar.setToolTipText("Clique aqui para entrar");
 		btnGerar.setForeground(Color.WHITE);
 		btnGerar.setBorderPainted(false);
@@ -115,17 +141,17 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 		lblMs.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblMs.setBackground(new Color(0, 47, 109));
 		
-		textField = new JTextField();
-		textField.setBounds(98, 16, 100, 20);
-		panel.add(textField);
-		textField.setColumns(10);
+		edtAno = new JTextField();
+		edtAno.setBounds(98, 16, 100, 20);
+		panel.add(edtAno);
+		edtAno.setColumns(10);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(276, 15, 100, 22);
-		panel.add(comboBox);
+		cbMes = new JComboBox();
+		cbMes.setBounds(276, 15, 100, 22);
+		panel.add(cbMes);
 		
 		JLabel lblNewLabel_1 = new JLabel("");
-		lblNewLabel_1.setIcon(new ImageIcon("C:\\Users\\soraya_farag\\Downloads\\icons8-correio-51 (2).png"));
+		lblNewLabel_1.setIcon(new ImageIcon(ViewDadosDoGrafico.class.getResource("/br/com/sistemarh/view/componentes/img/IconeEntregadorViewPrincipal.png")));
 		lblNewLabel_1.setBounds(29, 28, 51, 51);
 		contentPane.add(lblNewLabel_1);
 		
@@ -134,7 +160,6 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 		contentPane.add(pnlGrafico);
 		pnlGrafico.setLayout(null);
 		setLocationRelativeTo(null);
-		this.plotarGrafico();
 	}
 	
 }

@@ -19,7 +19,7 @@ public class LoginClient {
 	
 	private final String RESOURCE = "/auth";
 	
-	@Value("${url-api}")
+	@Value("${url-requisicao-autenticacao-api}")
 	private String urlDaApi;
 
 	@Autowired
@@ -41,7 +41,7 @@ public class LoginClient {
 		
 		JSONObject payloadJson = new JSONObject(payload);
 		
-		Preconditions.checkArgument(payloadJson.getString("papel").equals("LOJISTA"), 
+		Preconditions.checkArgument(payloadJson.getString("role").equals("Administrador"), 
 				"Esse login não possui autorização para acessar esse módulo");
 		
 		return token;

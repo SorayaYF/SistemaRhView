@@ -25,7 +25,7 @@ import lombok.Setter;
 @Component
 public class EntregadorClient {
 
-	private final String RESOURCE = "/entregadores";
+	private final String RESOURCE = "/entregador";
 	
 	@Value("${url-api}")
 	private String urlDaApi;
@@ -113,12 +113,12 @@ public class EntregadorClient {
 		queryParams.append("?nome=").append(nome);
 		
         if (StringUtils.isNotBlank(numeroHabilitacao)) {
-            queryParams.append("&cnh=").append(numeroHabilitacao);
+            queryParams.append("&numeroHabilitacao=").append(numeroHabilitacao);
         }
-        if (StringUtils.isNotBlank(cpf)) {
+        if (StringUtils.isNotBlank(cpf) && !cpf.equals("   .   .   -  ")) {
             queryParams.append("&cpf=").append(cpf);
         }
-        if (StringUtils.isNotBlank(telefone)) {
+        if (StringUtils.isNotBlank(telefone) && !telefone.equals("(  )     -    ")) {
             queryParams.append("&telefone=").append(telefone);
         }
 		queryParams.append("&pagina=").append(pagina);

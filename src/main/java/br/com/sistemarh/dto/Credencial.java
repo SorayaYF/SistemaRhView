@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Credencial {
 
-	@NotBlank(message = "O login é obrigatório")
-	private String login;
+	@NotBlank(message = "O email é obrigatório")
+	private String email;
 
 	@NotBlank(message = "A senha é obrigatória")
 	private String senha;

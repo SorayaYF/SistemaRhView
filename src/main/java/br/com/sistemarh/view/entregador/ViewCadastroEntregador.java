@@ -2,11 +2,15 @@ package br.com.sistemarh.view.entregador;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -15,37 +19,42 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.MaskFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.sistemarh.client.EntregadorClient;
 import br.com.sistemarh.dto.Entregador;
-import br.com.sistemarh.view.componentes.textfield.RoundJTextField;
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotBlank;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
+import jakarta.validation.constraints.NotNull;
+import javax.swing.JCheckBox;
 
 @Component
 public class ViewCadastroEntregador extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	
-	private RoundJTextField edtNome;
+	private TextField edtNome;
 	
-	private RoundJTextField edtTelefone;
+	private JFormattedTextField edtTelefone;
 	
-	private RoundJTextField edtCNH;
+	private TextField edtCNH;
 	
-	private RoundJTextField edtCPF;
+	private JFormattedTextField edtCPF;
 	
-	private RoundJTextField edtRua;
+	private TextField edtRua;
 	
-	private RoundJTextField edtBairro;
+	private TextField edtBairro;
 	
-	private RoundJTextField edtCidade;
+	private TextField edtCidade;
 	
-	private RoundJTextField edtEstado;
+	private TextField edtEstado;
+	
+	private TextField edtEmail;
+	
+	private JCheckBox chckbxSeguroDeVida;
 	
 	private String tokenDeAcesso;
 	
@@ -56,6 +65,11 @@ public class ViewCadastroEntregador extends JFrame {
 	@Autowired
 	private EntregadorClient entregadorClient;
 	
+	@PostConstruct
+	private void inicializar() {		
+		this.formatarCampoTelefone();
+		this.formatarCampoCPF();
+	}
 	
 	public void colocarEmModoDeInsercao(
 			@NotBlank(message = "O token de acesso é obrigatório")
@@ -63,8 +77,68 @@ public class ViewCadastroEntregador extends JFrame {
 		this.setVisible(true);
 		this.tokenDeAcesso = tokenDeAcesso;
 		this.entregadorClient.setTokenDeAcesso(tokenDeAcesso);
+		this.limparCampos();
 	}
+	
+	public void colocarEmModoDeEdicao(
+			@NotBlank(message = "O token de acesso é obrigatório")
+			String tokenDeAcesso,
+			@NotNull(message = "O entregador não pode ser nulo")
+			Entregador entregador) {
+		this.setVisible(true);
+		this.tokenDeAcesso = tokenDeAcesso;
+		this.entregadorClient.setTokenDeAcesso(tokenDeAcesso);
+		this.preencherFormularioCom(entregador);
+	}
+	
+    private void formatarCampoTelefone() {
+        try {
+            MaskFormatter maskTelefone = new MaskFormatter("(##)#####-####");
+            maskTelefone.install(edtTelefone);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private void formatarCampoCPF() {
+        try {
+            MaskFormatter maskCPF = new MaskFormatter("###.###.###-##");
+            maskCPF.install(edtCPF);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+	
+	private void preencherFormularioCom(Entregador entregador) {
+		this.entregador = entregador;
+		this.edtNome.setText(entregador.getNome());
+		this.edtTelefone.setText(entregador.getTelefone());
+		this.edtCNH.setText(entregador.getNumeroHabilitacao());
+		this.edtCPF.setText(entregador.getCpf());
+		this.edtBairro.setText(entregador.getEndereco().getBairro());
+		this.edtCidade.setText(entregador.getEndereco().getCidade());
+		this.edtEstado.setText(entregador.getEndereco().getEstado());
+		this.edtRua.setText(entregador.getEndereco().getLogradouro());
+		this.chckbxSeguroDeVida.setSelected(entregador.getSeguroDeVida());
+		this.edtEmail.setText(entregador.getEmail());
+		
+	}
+	
+	private void limparCampos() {
+		this.entregador = new Entregador();
+		this.edtNome.setText("");
+		this.edtTelefone.setText("");
+		this.edtCNH.setText("");
+		this.edtCPF.setText("");
+		this.edtBairro.setText("");
+		this.edtCidade.setText("");
+		this.edtEstado.setText("");
+		this.edtRua.setText("");
+		this.chckbxSeguroDeVida.setSelected(false);
+		this.edtEmail.setText("");
+
+	}
+	
 	/**
 	 * Create the frame.
 	 */
@@ -105,51 +179,47 @@ public class ViewCadastroEntregador extends JFrame {
 		lblCnh.setForeground(Color.WHITE);
 		lblCnh.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblCnh.setBackground(new Color(0, 47, 109));
-		lblCnh.setBounds(16, 152, 25, 14);
+		lblCnh.setBounds(515, 27, 25, 14);
 		panel.add(lblCnh);
 		
 		JLabel lblCpf = new JLabel("CPF:");
 		lblCpf.setForeground(Color.WHITE);
 		lblCpf.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblCpf.setBackground(new Color(0, 47, 109));
-		lblCpf.setBounds(16, 215, 35, 25);
+		lblCpf.setBounds(515, 88, 35, 25);
 		panel.add(lblCpf);
 		
-		edtNome = new RoundJTextField(0);
+		edtNome = new TextField();
 		edtNome.setBounds(16, 52, 350, 25);
 		panel.add(edtNome);
 		
-		edtTelefone = new RoundJTextField(0);
+		edtTelefone = new JFormattedTextField();
 		edtTelefone.setBounds(16, 113, 350, 25);
 		panel.add(edtTelefone);
 		
-		edtCNH = new RoundJTextField(0);
-		edtCNH.setBounds(16, 177, 350, 25);
+		edtCNH = new TextField();
+		edtCNH.setBounds(515, 47, 350, 25);
 		panel.add(edtCNH);
 		
-		edtCPF = new RoundJTextField(0);
-		edtCPF.setBounds(16, 240, 350, 25);
+		edtCPF = new JFormattedTextField();
+		edtCPF.setBounds(515, 113, 350, 25);
 		panel.add(edtCPF);
 		
-		JPanel panel_2 = new JPanel();
-		panel_2.setForeground(new Color(0, 45, 109));
-		panel_2.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Foto", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 45, 109)));
-		panel_2.setBackground(new Color(255, 255, 255));
-		panel_2.setBounds(515, 25, 350, 240);
-		panel.add(panel_2);
-		panel_2.setLayout(null);
+		JLabel lblEmail = new JLabel("Email:");
+		lblEmail.setForeground(Color.WHITE);
+		lblEmail.setFont(new Font("Tahoma", Font.BOLD, 11));
+		lblEmail.setBackground(new Color(0, 47, 109));
+		lblEmail.setBounds(16, 150, 42, 14);
+		panel.add(lblEmail);
+		
+		edtEmail = new TextField();
+		edtEmail.setBounds(16, 170, 849, 25);
+		panel.add(edtEmail);
 		
 		JLabel lblNewLabel_1 = new JLabel("");
-		lblNewLabel_1.setIcon(new ImageIcon("C:\\Users\\soraya_farag\\Downloads\\icons8-usuário-homem-com-círculo-64 (1).png"));
-		lblNewLabel_1.setBounds(133, 57, 64, 64);
-		panel_2.add(lblNewLabel_1);
-		
-		JButton btnAdicionarFoto = new JButton("Adicionar foto");
-		btnAdicionarFoto.setIcon(new ImageIcon("C:\\Users\\soraya_farag\\Downloads\\icons8-arquivo-16.png"));
-		btnAdicionarFoto.setBackground(new Color(0, 45, 109));
-		btnAdicionarFoto.setForeground(new Color(255, 255, 255));
-		btnAdicionarFoto.setBounds(97, 152, 145, 26);
-		panel_2.add(btnAdicionarFoto);
+		lblNewLabel_1.setIcon(new ImageIcon(ViewCadastroEntregador.class.getResource("/br/com/sistemarh/view/componentes/img/IconeUsuarioViewLogin.png")));
+		lblNewLabel_1.setBounds(433, 211, 48, 48);
+		panel.add(lblNewLabel_1);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setLayout(null);
@@ -186,19 +256,19 @@ public class ViewCadastroEntregador extends JFrame {
 		lblEstado.setBounds(515, 88, 76, 25);
 		panel_1.add(lblEstado);
 		
-		edtRua = new RoundJTextField(0);
+		edtRua = new TextField();
 		edtRua.setBounds(16, 52, 350, 25);
 		panel_1.add(edtRua);
 		
-		edtBairro = new RoundJTextField(0);
+		edtBairro = new TextField();
 		edtBairro.setBounds(16, 113, 350, 25);
 		panel_1.add(edtBairro);
 		
-		edtCidade = new RoundJTextField(0);
+		edtCidade = new TextField();
 		edtCidade.setBounds(515, 52, 350, 25);
 		panel_1.add(edtCidade);
 		
-		edtEstado = new RoundJTextField(0);
+		edtEstado = new TextField();
 		edtEstado.setBounds(515, 113, 350, 25);
 		panel_1.add(edtEstado);
 		
@@ -222,12 +292,16 @@ public class ViewCadastroEntregador extends JFrame {
 				entregador.getEndereco().setCidade(edtCidade.getText());
 				entregador.getEndereco().setLogradouro(edtRua.getText());
 				entregador.getEndereco().setEstado(edtEstado.getText());
+				entregador.setSeguroDeVida(chckbxSeguroDeVida.isSelected());
+				entregador.setEmail(edtEmail.getText());
 				
 				try {
 					if (entregador.isPersistido()) {
 						Entregador entregadorAtualizado = entregadorClient.atualizar(entregador);
+						preencherFormularioCom(entregadorAtualizado);
 					}else {
 						Entregador entregadorSalvo = entregadorClient.inserir(entregador);
+						preencherFormularioCom(entregadorSalvo);
 					}
 
 					JOptionPane.showMessageDialog(contentPane, "Entregador salvo com sucesso", 
@@ -248,11 +322,18 @@ public class ViewCadastroEntregador extends JFrame {
 		panel_1_1.add(btnSalvar);
 		
 		JPanel panel_3 = new JPanel();
-		panel_3.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Seguro de vida", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
-		panel_3.setBounds(782, 495, 140, 48);
+		panel_3.setForeground(new Color(255, 255, 255));
+		panel_3.setBackground(new Color(0, 45, 109));
+		panel_3.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Acrescentar seguro?", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(255, 255, 255)));
+		panel_3.setBounds(750, 495, 172, 54);
 		contentPane.add(panel_3);
 		panel_3.setLayout(null);
 		
+		chckbxSeguroDeVida = new JCheckBox("Seguro de vida");
+		chckbxSeguroDeVida.setBackground(new Color(0, 47, 109));
+		chckbxSeguroDeVida.setForeground(new Color(255, 255, 255));
+		chckbxSeguroDeVida.setBounds(8, 22, 156, 24);
+		panel_3.add(chckbxSeguroDeVida);
 		
 		setLocationRelativeTo(null);
 	}

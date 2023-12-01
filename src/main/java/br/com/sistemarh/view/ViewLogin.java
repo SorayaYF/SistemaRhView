@@ -83,18 +83,23 @@ public class ViewLogin extends JFrame implements Serializable {
 		btnLogin.setToolTipText("Clique aqui para entrar");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				viewPrincipal.setVisible(true);
-				/*
-				 * try { String login = edtLogin.getText(); String senha = new
-				 * String(edtSenha.getPassword()); login = "usuario5.lojista"; senha = "123456";
-				 * Credencial credencial = new Credencial(login, senha); String tokenDeAcesso =
-				 * loginClient.autenticar(credencial);
-				 * JOptionPane.showMessageDialog(contentPane, "Login realizado com sucesso",
-				 * "Acesso Liberado", JOptionPane.INFORMATION_MESSAGE);
-				 * viewPrincipal.mostrarTela(tokenDeAcesso); dispose(); } catch (Exception ex) {
-				 * JOptionPane.showMessageDialog(contentPane, ex.getMessage(), "Falha no Login",
-				 * JOptionPane.ERROR_MESSAGE); limparCampos(); }
-				 */
+				try {
+//					String login = edtLogin.getText();
+//					String senha = new String(edtSenha.getPassword());
+					String login = "admin8585@gmail.com";
+					String senha = "Tmurilo123";
+					Credencial credencial = new Credencial(login, senha);
+					String tokenDeAcesso = loginClient.autenticar(credencial);
+					JOptionPane.showMessageDialog(contentPane, "Login realizado com sucesso", 
+							"Acesso Liberado", JOptionPane.INFORMATION_MESSAGE);
+					viewPrincipal.mostrarTela(tokenDeAcesso);
+					dispose();
+				}catch (Exception ex) {
+					ex.printStackTrace();
+					JOptionPane.showMessageDialog(contentPane, ex.getMessage(), 
+							"Falha no Login", JOptionPane.ERROR_MESSAGE);
+					limparCampos();
+				}
 			}
 		});
 		btnLogin.setBounds(415, 373, 100, 25);

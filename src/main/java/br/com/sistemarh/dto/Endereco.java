@@ -9,17 +9,16 @@ import lombok.Data;
 @Data
 @JsonInclude(Include.NON_NULL)
 public class Endereco {
-	
-	@NotBlank(message = "O nome da cidade é obrigatório")
-	private String cidade;
-	
-	@NotBlank(message = "O logradouro é obrigatório")
-	private String logradouro;
-		
-	@NotBlank(message = "O bairro é obrigatório")	
-	private String bairro;
-		
-	@NotBlank(message = "O estado é obrigatório")	
-	private String estado;
-	
+
+    @NotBlank(message = "O logradouro é obrigatória")
+    private String logradouro;
+
+    @NotBlank(message = "O bairro é obrigatória")
+    private String bairro;
+
+    @NotBlank(message = "A cidade é obrigatória")
+    private String cidade;
+
+    @NotBlank(message = "O estado é obrigatório")
+    private String estado;
 }

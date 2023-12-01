@@ -10,7 +10,7 @@ import br.com.sistemarh.dto.Entregador;
 public class TabelaEntregadores extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	
-	private final int QTDE_COLUNAS = 5;
+	private final int QTDE_COLUNAS = 6;
 	
 	private List<Entregador> entregadores;
 
@@ -47,6 +47,8 @@ public class TabelaEntregadores extends AbstractTableModel {
 			return "CNH";
 		}else if (column == 4) {
 			return "CPF";
+		}else if (column == 5) {
+			return "Status";
 		}
 		throw new IllegalArgumentException("Indíce inválido");
 	}
@@ -63,6 +65,8 @@ public class TabelaEntregadores extends AbstractTableModel {
 			return entregadores.get(rowIndex).getNumeroHabilitacao();
 		} else if (columnIndex == 4) {
 			return entregadores.get(rowIndex).getCpf();
+		} else if (columnIndex == 5) {
+			return entregadores.get(rowIndex).getStatus();
 		} 
 		throw new IllegalArgumentException("Índice inválido");
 	}

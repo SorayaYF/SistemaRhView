@@ -7,10 +7,8 @@ import br.com.sistemarh.enums.Status;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
@@ -39,11 +37,14 @@ public class Entregador {
 	@ToString.Exclude
 	private Endereco endereco;
 	
+	@NotBlank(message = "O email é obrigatório")	
+	private String email;
+	
 	private Status status;
 	
 	public Entregador() {
-		this.status = Status.A;
 		this.endereco = new Endereco();
+		this.status = Status.A;
 	}
 	
 	public boolean isPersistido() {
