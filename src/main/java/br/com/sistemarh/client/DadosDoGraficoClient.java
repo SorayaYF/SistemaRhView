@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import br.com.sistemarh.dto.AnoDeRepasse;
 import br.com.sistemarh.dto.DadosDoGrafico;
 import jakarta.validation.constraints.NotNull;
 import lombok.Setter;
@@ -17,7 +18,7 @@ import lombok.Setter;
 @Component
 public class DadosDoGraficoClient {
 
-    private final String RESOURCE = "/dados-do-grafico";
+    private final String RESOURCE = "/grafico";
 
     @Value("${url-api}")
     private String urlDaApi;
@@ -30,6 +31,17 @@ public class DadosDoGraficoClient {
 
     @Setter
     private String tokenDeAcesso;
+    
+    public AnoDeRepasse obterAnoDeRepassePor(
+    		@NotNull(message = "O ano é obrigatório") 
+    		Integer ano) {
+
+        ResponseEntity<AnoDeRepasse> anoDeRepasseEntity = httpClient.exchange(
+                urlDaApi + RESOURCE + "/ano/" + ano, HttpMethod.GET, null, AnoDeRepasse.class);
+
+        return anoDeRepasseEntity.getBody();
+
+    }
 
     public DadosDoGrafico obterDadosDoGrafico(
     		@NotNull(message = "O ano é obrigatório") 

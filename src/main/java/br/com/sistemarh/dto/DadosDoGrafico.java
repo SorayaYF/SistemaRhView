@@ -1,21 +1,15 @@
 package br.com.sistemarh.dto;
 
-import java.math.BigDecimal;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@AllArgsConstructor
-@NoArgsConstructor
 @JsonInclude(Include.NON_NULL)
 public class DadosDoGrafico {
 
@@ -23,9 +17,8 @@ public class DadosDoGrafico {
 	@NotNull(message = "O ano é obrigatório")
     private Integer ano;
 
-    @Positive(message = "O mês deve ser positivo")
-    private Integer mes;
-
-    private BigDecimal volumeMovimentadoDeRepasses;
+	@Valid
+	@ToString.Exclude
+	private Mes mes;
 
 }

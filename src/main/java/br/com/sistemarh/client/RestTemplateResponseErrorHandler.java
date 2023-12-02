@@ -22,14 +22,20 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
     	String body = IOUtils.toString(httpResponse.getBody(), "UTF-8");
     	JSONObject responseJson = new JSONObject(body);
     	StringBuilder errosMsg = new StringBuilder();
-    	for (Object erro : responseJson.getJSONArray("erros")) {
-    		JSONObject erroJson = (JSONObject)erro;
-    		errosMsg.append("  -").append(erroJson.get("mensagem")).append("\n");
+    	
+    	if (responseJson.isNull("erros")) {
+    		throw new RuntimeException("Os seguinte erro ocorreu: \n" + body);
+    	}else {
+    		for (Object erro : responseJson.getJSONArray("erros")) {
+    			JSONObject erroJson = (JSONObject)erro;
+    			errosMsg.append("  -").append(erroJson.get("mensagem")).append("\n");
+    		}
+    		if (httpResponse.getStatusCode().is5xxServerError()){
+    			throw new RuntimeException("Os seguintes erros (servidor) ocorreram: \n" + errosMsg);        	        
+    		}else if (httpResponse.getStatusCode().is4xxClientError()){
+    			throw new RuntimeException("Os seguintes erros (cliente) ocorreram: \n" + errosMsg);
+    		}    		
     	}
-        if (httpResponse.getStatusCode().is5xxServerError()){
-        	throw new RuntimeException("Os seguintes erros (servidor) ocorreram: \n" + errosMsg);        	        
-        }else if (httpResponse.getStatusCode().is4xxClientError()){
-        	throw new RuntimeException("Os seguintes erros (cliente) ocorreram: \n" + errosMsg);
-        }
+    	
     }
 }

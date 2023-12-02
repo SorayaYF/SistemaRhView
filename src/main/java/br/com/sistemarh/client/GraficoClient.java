@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import br.com.sistemarh.dto.DadosDoGrafico;
+import br.com.sistemarh.dto.Mes;
 import jakarta.validation.constraints.NotNull;
 import lombok.Setter;
 
@@ -37,8 +38,8 @@ public class GraficoClient {
     		@NotNull(message = "O ano é obrigatório") 
     		Integer ano,
     		@NotNull(message = "O mês é obrigatório") 
-    		Integer mes) {
-    	
+    		Mes mes) {
+   
     	JSONObject body = new JSONObject();
     	
     	body.put("ano", ano);

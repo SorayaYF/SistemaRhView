@@ -8,9 +8,9 @@ import java.io.Serializable;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -22,10 +22,11 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import br.com.sistemarh.client.DadosDoGraficoClient;
 import br.com.sistemarh.client.GraficoClient;
-import br.com.sistemarh.dto.DadosDoGrafico;
+import br.com.sistemarh.dto.AnoDeRepasse;
+import br.com.sistemarh.dto.MesDeRepasse;
 import br.com.sistemarh.view.componentes.grafico.GraficoDeBarras;
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotBlank;
 
 @Component
@@ -39,17 +40,13 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 	
 	private JPanel pnlGrafico;
 	
-	private JComboBox<String> cbMes;
-	
 	private String tokenDeAcesso;
 	
 	@Autowired
 	private GraficoClient dadosDoGraficoClient;
 	
-	@PostConstruct
-	private void inicializar() {
-		this.preencherComboBoxMes();
-	}
+	@Autowired
+	private DadosDoGraficoClient graficoClient;
 	
 	public void mostrarTela(
 			@NotBlank(message = "O token de acesso é obrigatório")
@@ -59,37 +56,30 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 		this.dadosDoGraficoClient.setTokenDeAcesso(tokenDeAcesso);
 	} 
 	
-	private static String obterNomeMes(int numeroMes) {
-	    String[] nomesMeses = {
-	            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-	            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-	    };
-	    return nomesMeses[numeroMes - 1];
-	}
-	
-	private void plotarGrafico(DadosDoGrafico dados) {
-	    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-	    dataset.addValue(dados.getVolumeMovimentadoDeRepasses(), obterNomeMes(dados.getMes()), "Valor Pago(R$)");
-
-	    GraficoDeBarras grafico = new GraficoDeBarras();
+	private void plotarGraficoPor(AnoDeRepasse anoDeRepasse) {
+		
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		
+		GraficoDeBarras grafico = new GraficoDeBarras();
+		
+		for (MesDeRepasse mesDeRepasse : anoDeRepasse.getMeses()) {
+			dataset.addValue(mesDeRepasse.getValorRepassado(), mesDeRepasse.getNome(), "Valor Pago(R$)");
+		}
+		
 	    ChartPanel pnlBarras = grafico.plotarPor(dataset,
 	            "Pagamentos Mensais", "", "Mês", 914, 450, 0, 0);
-	    pnlGrafico.removeAll();
+
+		pnlGrafico.removeAll();
 	    pnlGrafico.add(pnlBarras);
 	    pnlGrafico.revalidate();
 	    pnlGrafico.repaint();
+		
 	}
 	
-	private DadosDoGrafico obterDadosDoGrafico(Integer ano, Integer mes) {
-	    return dadosDoGraficoClient.obterDadosDoGrafico(ano, mes);
-	}
-
-	private void preencherComboBoxMes() {
-	    cbMes.removeAllItems();
-	    for (int i = 1; i <= 12; i++) {
-	        cbMes.addItem(obterNomeMes(i));
-	    }
+	private AnoDeRepasse obterDadosDoGrafico(Integer ano) {
+		//Só existe um endpoint que puxa por ano
+		//Removam a feature de gerar por semana o prazo não permite mais
+		return graficoClient.obterAnoDeRepassePor(ano);			
 	}
 
 	public ViewDadosDoGrafico() {
@@ -115,12 +105,15 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 		JButton btnGerar = new JButton("Gerar");
 		btnGerar.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
-		        Integer anoSelecionado = Integer.parseInt(edtAno.getText());
-		        Integer mesSelecionado = cbMes.getSelectedIndex() + 1; 
+		    	
+				try {
+					Integer anoSelecionado = Integer.parseInt(edtAno.getText());
+			        AnoDeRepasse anoDeRepasse = obterDadosDoGrafico(anoSelecionado);
+			        plotarGraficoPor(anoDeRepasse);
+				}catch (Exception ex) {
+					JOptionPane.showMessageDialog(contentPane, ex.getMessage());
+				}
 
-		        DadosDoGrafico dados = obterDadosDoGrafico(anoSelecionado, mesSelecionado);
-
-		        plotarGrafico(dados);
 		    }
 		});
 		btnGerar.setToolTipText("Clique aqui para entrar");
@@ -134,7 +127,7 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 		panel.setForeground(new Color(255, 255, 255));
 		panel.setBackground(new Color(0, 45, 109));
 		panel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Param\u00EAtros de Pesquina", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(255, 255, 255)));
-		panel.setBounds(192, 11, 428, 44);
+		panel.setBounds(342, 11, 249, 44);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
@@ -145,21 +138,10 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 		lblAno.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblAno.setBackground(new Color(0, 47, 109));
 		
-		JLabel lblMs = new JLabel("Mês:");
-		lblMs.setBounds(216, 18, 42, 14);
-		panel.add(lblMs);
-		lblMs.setForeground(Color.WHITE);
-		lblMs.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblMs.setBackground(new Color(0, 47, 109));
-		
 		edtAno = new JTextField();
 		edtAno.setBounds(98, 16, 100, 20);
 		panel.add(edtAno);
 		edtAno.setColumns(10);
-		
-		cbMes = new JComboBox<String>();
-		cbMes.setBounds(276, 15, 100, 22);
-		panel.add(cbMes);
 		
 		JLabel lblNewLabel_1 = new JLabel("");
 		lblNewLabel_1.setIcon(new ImageIcon(ViewDadosDoGrafico.class.getResource("/br/com/sistemarh/view/componentes/img/IconeEntregadorViewPrincipal.png")));
