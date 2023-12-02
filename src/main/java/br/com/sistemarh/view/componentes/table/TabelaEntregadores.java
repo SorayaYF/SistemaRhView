@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import br.com.sistemarh.dto.Entregador;
+import br.com.sistemarh.enums.Status;
 
 public class TabelaEntregadores extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
@@ -66,7 +67,7 @@ public class TabelaEntregadores extends AbstractTableModel {
 		} else if (columnIndex == 4) {
 			return entregadores.get(rowIndex).getCpf();
 		} else if (columnIndex == 5) {
-			return entregadores.get(rowIndex).getStatus();
+			return formatarStatus(entregadores.get(rowIndex).getStatus());
 		} 
 		throw new IllegalArgumentException("Índice inválido");
 	}
@@ -74,5 +75,13 @@ public class TabelaEntregadores extends AbstractTableModel {
 	public Entregador getPor(int rowIndex) {
 		return entregadores.get(rowIndex);
 	}	
+
+	private String formatarStatus(Status status) {
+	    if (status == Status.A) {
+	        return "Ativo";
+	    } else {
+	        return "Inativo";
+	    }
+	}
 
 }

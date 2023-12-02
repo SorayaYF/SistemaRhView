@@ -1,28 +1,56 @@
 package br.com.sistemarh.view.relatorio;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import java.awt.Color;
-import javax.swing.JLabel;
 import java.awt.Font;
 import java.io.Serializable;
 
-import javax.swing.JTextField;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import org.springframework.stereotype.Component;
 
-import javax.swing.border.LineBorder;
-import javax.swing.ImageIcon;
+import jakarta.validation.constraints.NotBlank;
 
 @Component
 public class ViewRepasse extends JFrame implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	
 	private JTextField edtAno;
+	
+	private JComboBox<String> cbMes;
+	
+	private String tokenDeAcesso;
+	
+	public void mostrarTela(
+			@NotBlank(message = "O token de acesso é obrigatório")
+			String tokenDeAcesso) {
+		this.setVisible(true);
+		this.tokenDeAcesso = tokenDeAcesso;
+	}
+	
+	private static String obterNomeMes(int numeroMes) {
+	    String[] nomesMeses = {
+	            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+	            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+	    };
+	    return nomesMeses[numeroMes - 1];
+	}
+	
+	private void preencherComboBoxMes() {
+	    cbMes.removeAllItems();
+	    for (int i = 1; i <= 12; i++) {
+	        cbMes.addItem(obterNomeMes(i));
+	    }
+	}
 
 	/**
 	 * Create the frame.
@@ -66,7 +94,7 @@ public class ViewRepasse extends JFrame implements Serializable {
 		lblMs.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblMs.setBackground(new Color(0, 47, 109));
 		
-		JComboBox cbMes = new JComboBox();
+		cbMes = new JComboBox<String>();
 		cbMes.setBounds(66, 59, 86, 22);
 		panel_1.add(cbMes);
 		
@@ -86,10 +114,5 @@ public class ViewRepasse extends JFrame implements Serializable {
 		lblNewLabel_1.setBounds(202, 284, 51, 51);
 		contentPane.add(lblNewLabel_1);
 		setLocationRelativeTo(null);
-	}
-
-	public void mostrarTela(String tokenDeAcesso) {
-		// TODO Auto-generated method stub
-		
 	}
 }

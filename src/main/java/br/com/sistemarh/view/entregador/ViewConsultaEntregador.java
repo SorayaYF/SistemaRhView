@@ -283,7 +283,7 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 				if (linhaSelecionada >= 0) {
 
 					int opcao = JOptionPane.showConfirmDialog(contentPane, 
-							"Deseja atualizar o status da categoria selecionada?", 
+							"Deseja atualizar o status do entregador selecionado?", 
 							"Atualização", JOptionPane.YES_NO_OPTION);
 
 					boolean isConfirmacaoRealizada = opcao == 0;
@@ -297,7 +297,7 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 							entregadorClient.atualizarPor(entregadorSelecionado.getId(), novoStatus);
 							listarEntregadores(paginaAtual);
 							JOptionPane.showMessageDialog(contentPane, "O status do entregador foi atualizado com sucesso", 
-									"Sucesso na Remoção", JOptionPane.INFORMATION_MESSAGE);
+									"Sucesso na Desativação", JOptionPane.INFORMATION_MESSAGE);
 						}catch (ConstraintViolationException cve) {
 							StringBuilder msgErro = new StringBuilder("Os seguintes erros ocorreram:\n");			
 							for (ConstraintViolation<?> cv : cve.getConstraintViolations()) {
@@ -313,7 +313,7 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 					}
 
 				}else {
-					JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para remoção");
+					JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para desativação");
 				}
 				
 			}				
@@ -326,6 +326,48 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 		btnDesativar.setBackground(new Color(0, 47, 109));
 		
 		JButton btnAtivar = new JButton("Ativar");
+		btnAtivar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int linhaSelecionada = tbEntregadores.getSelectedRow();
+				
+				if (linhaSelecionada >= 0) {
+
+					int opcao = JOptionPane.showConfirmDialog(contentPane, 
+							"Deseja atualizar o status do entregador selecionado?", 
+							"Atualização", JOptionPane.YES_NO_OPTION);
+
+					boolean isConfirmacaoRealizada = opcao == 0;
+
+					if (isConfirmacaoRealizada) {
+						
+						try {
+							TabelaEntregadores model = (TabelaEntregadores)tbEntregadores.getModel();
+							Entregador entregadorSelecionado = model.getPor(linhaSelecionada);
+							Status novoStatus = entregadorSelecionado.isInativo() ? Status.A : Status.I;
+							entregadorClient.atualizarPor(entregadorSelecionado.getId(), novoStatus);
+							listarEntregadores(paginaAtual);
+							JOptionPane.showMessageDialog(contentPane, "O status do entregador foi atualizado com sucesso", 
+									"Sucesso na Ativação", JOptionPane.INFORMATION_MESSAGE);
+						}catch (ConstraintViolationException cve) {
+							StringBuilder msgErro = new StringBuilder("Os seguintes erros ocorreram:\n");			
+							for (ConstraintViolation<?> cv : cve.getConstraintViolations()) {
+								msgErro.append("  -").append(cv.getMessage()).append("\n");
+							}
+							JOptionPane.showMessageDialog(contentPane, msgErro, 
+									"Falha na Listagem", JOptionPane.ERROR_MESSAGE);
+						}catch (Exception ex) {
+							JOptionPane.showMessageDialog(contentPane, ex.getMessage(),
+									"Erro na Atualização", JOptionPane.ERROR_MESSAGE);
+						}
+						
+					}
+
+				}else {
+					JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para ativação");
+				}
+				
+			}				
+		});
 		btnAtivar.setBounds(450, 17, 100, 25);
 		panelAcoes.add(btnAtivar);
 		btnAtivar.setToolTipText("Clique aqui para ativar um entregador existente");

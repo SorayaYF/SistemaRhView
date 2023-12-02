@@ -55,4 +55,8 @@ public class Entregador {
 		return getStatus() == Status.A;
 	}
 	
+	public boolean isInativo() {
+		return getStatus() == Status.I;
+	}
+	
 }

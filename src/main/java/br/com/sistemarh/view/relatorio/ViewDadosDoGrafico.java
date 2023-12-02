@@ -22,9 +22,10 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import br.com.sistemarh.client.DadosDoGraficoClient;
+import br.com.sistemarh.client.GraficoClient;
 import br.com.sistemarh.dto.DadosDoGrafico;
 import br.com.sistemarh.view.componentes.grafico.GraficoDeBarras;
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotBlank;
 
 @Component
@@ -38,12 +39,17 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 	
 	private JPanel pnlGrafico;
 	
-	private JComboBox cbMes;
+	private JComboBox<String> cbMes;
 	
 	private String tokenDeAcesso;
 	
 	@Autowired
-	private DadosDoGraficoClient dadosDoGraficoClient;
+	private GraficoClient dadosDoGraficoClient;
+	
+	@PostConstruct
+	private void inicializar() {
+		this.preencherComboBoxMes();
+	}
 	
 	public void mostrarTela(
 			@NotBlank(message = "O token de acesso é obrigatório")
@@ -79,7 +85,12 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 	    return dadosDoGraficoClient.obterDadosDoGrafico(ano, mes);
 	}
 
-
+	private void preencherComboBoxMes() {
+	    cbMes.removeAllItems();
+	    for (int i = 1; i <= 12; i++) {
+	        cbMes.addItem(obterNomeMes(i));
+	    }
+	}
 
 	public ViewDadosDoGrafico() {
 		setResizable(false);
@@ -146,7 +157,7 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 		panel.add(edtAno);
 		edtAno.setColumns(10);
 		
-		cbMes = new JComboBox();
+		cbMes = new JComboBox<String>();
 		cbMes.setBounds(276, 15, 100, 22);
 		panel.add(cbMes);
 		
