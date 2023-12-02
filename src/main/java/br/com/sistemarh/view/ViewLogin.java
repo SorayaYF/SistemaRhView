@@ -125,7 +125,7 @@ public class ViewLogin extends JFrame implements Serializable {
 
 		JLabel lblNewLabel = new JLabel("");
 		lblNewLabel.setBackground(new Color(0, 47, 109));
-		lblNewLabel.setIcon(new ImageIcon("C:\\Users\\soraya_farag\\Downloads\\Design sem nome (2).png"));
+		lblNewLabel.setIcon(new ImageIcon(ViewLogin.class.getResource("/br/com/sistemarh/view/componentes/img/FundoLogin.jpeg")));
 		lblNewLabel.setBounds(12, 12, 910, 537);
 		contentPane.add(lblNewLabel);
 		setLocationRelativeTo(null);
