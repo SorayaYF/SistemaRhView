@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.util.Base64;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -19,6 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -61,7 +64,7 @@ public class ViewRepasse extends JFrame implements Serializable {
 	    }
 
 	    int ano = Integer.parseInt(anoText);
-	    
+
 	    int mes = Integer.parseInt(mesText);
 
 	    Repasse relatorio = repasseClient.obterRepasse(ano, mes);
@@ -71,15 +74,26 @@ public class ViewRepasse extends JFrame implements Serializable {
 	        return;
 	    }
 
-	    byte[] relatorioPDF = Base64.getDecoder().decode(relatorio.getConteudoBase64());
+	    JFileChooser fileChooser = new JFileChooser();
+	    fileChooser.setDialogTitle("Escolha o local para salvar o relatório");
+	    fileChooser.setSelectedFile(new File("relatorio_" + ano + ".pdf"));
 
-	    String nomeArquivo = "relatorio_" + ano + ".pdf";
-	    try (FileOutputStream fos = new FileOutputStream(nomeArquivo)) {
-	        fos.write(relatorioPDF);
+	    FileNameExtensionFilter filter = new FileNameExtensionFilter("Arquivos PDF", "pdf");
+	    fileChooser.setFileFilter(filter);
+
+	    int userSelection = fileChooser.showSaveDialog(ViewRepasse.this);
+
+	    if (userSelection == JFileChooser.APPROVE_OPTION) {
+	        File fileToSave = fileChooser.getSelectedFile();
+
+	        try (FileOutputStream fos = new FileOutputStream(fileToSave)) {
+	            fos.write(Base64.getDecoder().decode(relatorio.toString()));
+	            JOptionPane.showMessageDialog(ViewRepasse.this, "Relatório gerado com sucesso. O arquivo foi salvo em " + fileToSave.getAbsolutePath(), 
+	                    "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+	        } catch (IOException e) {
+	            JOptionPane.showMessageDialog(ViewRepasse.this, "Erro ao salvar o relatório: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+	        }
 	    }
-
-	    JOptionPane.showMessageDialog(ViewRepasse.this, "Relatório gerado com sucesso. O arquivo foi salvo como " + nomeArquivo, 
-	    		"Sucesso", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**
@@ -139,6 +153,7 @@ public class ViewRepasse extends JFrame implements Serializable {
 				}
 			}
 		});
+		btnGerar.setToolTipText("Clique aqui para gerar o relatório");
 		btnGerar.setBounds(290, 38, 89, 23);
 		panel_1.add(btnGerar);
 		

@@ -9,7 +9,7 @@ import java.text.ParseException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
+import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -29,7 +29,6 @@ import br.com.sistemarh.dto.Entregador;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import javax.swing.JCheckBox;
 
 @Component
 public class ViewCadastroEntregador extends JFrame {
@@ -314,7 +313,7 @@ public class ViewCadastroEntregador extends JFrame {
 
 			}
 		});
-		btnSalvar.setToolTipText("Clique aqui para entrar");
+		btnSalvar.setToolTipText("Clique aqui para salvar");
 		btnSalvar.setForeground(Color.WHITE);
 		btnSalvar.setBorderPainted(false);
 		btnSalvar.setBackground(new Color(0, 47, 109));

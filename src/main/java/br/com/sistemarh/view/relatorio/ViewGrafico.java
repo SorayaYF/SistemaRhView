@@ -115,7 +115,7 @@ public class ViewGrafico extends JFrame implements Serializable {
 
 		    }
 		});
-		btnGerar.setToolTipText("Clique aqui para entrar");
+		btnGerar.setToolTipText("Clique aqui para gerar o gráfico");
 		btnGerar.setForeground(Color.WHITE);
 		btnGerar.setBorderPainted(false);
 		btnGerar.setBackground(new Color(0, 47, 109));

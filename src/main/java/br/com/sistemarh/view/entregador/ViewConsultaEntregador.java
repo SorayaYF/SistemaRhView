@@ -238,7 +238,7 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 				listarEntregadores(PRIMEIRA_PAGINA);
 			}
 		});
-		btnListar.setToolTipText("Clique aqui para cadastrar um novo entregador");
+		btnListar.setToolTipText("Clique aqui para listar os entregadores");
 		btnListar.setForeground(Color.WHITE);
 		btnListar.setBorderPainted(false);
 		btnListar.setBackground(new Color(0, 47, 109));

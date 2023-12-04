@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
 public class Repasse {
@@ -18,7 +17,5 @@ public class Repasse {
     @Max(value = 12, message = "O mês deve ser menor ou igual a 12")
     @Positive(message = "O mês deve ser positivo")
     private Integer mes;
-
-    private String conteudoBase64;
 
 }
