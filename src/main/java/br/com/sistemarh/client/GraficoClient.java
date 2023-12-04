@@ -1,19 +1,13 @@
 package br.com.sistemarh.client;
 
-import java.util.Map;
-import java.util.Objects;
-
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import br.com.sistemarh.dto.DadosDoGrafico;
-import br.com.sistemarh.dto.Mes;
+import br.com.sistemarh.dto.AnoDeRepasse;
 import jakarta.validation.constraints.NotNull;
 import lombok.Setter;
 
@@ -26,33 +20,19 @@ public class GraficoClient {
     private String urlDaApi;
 
     @Autowired
-    private AplicadorDeToken aplicador;
-
-    @Autowired
     private RestTemplate httpClient;
 
     @Setter
     private String tokenDeAcesso;
-
-    public DadosDoGrafico obterDadosDoGrafico(
+    
+    public AnoDeRepasse obterAnoDeRepassePor(
     		@NotNull(message = "O ano é obrigatório") 
-    		Integer ano,
-    		@NotNull(message = "O mês é obrigatório") 
-    		Mes mes) {
-   
-    	JSONObject body = new JSONObject();
-    	
-    	body.put("ano", ano);
-		
-        if (Objects.nonNull(mes)) {
-        	body.put("mes", mes);
-        }
-        
-        HttpEntity<Map<String, Object>> request = new HttpEntity<Map<String, Object>>(body.toMap(), aplicador.aplicar(tokenDeAcesso));
+    		Integer ano) {
 
-        ResponseEntity<DadosDoGrafico> dadosDoGraficoResponseEntity = httpClient.exchange(
-                urlDaApi + RESOURCE, HttpMethod.POST, request, DadosDoGrafico.class);
+        ResponseEntity<AnoDeRepasse> anoDeRepasseEntity = httpClient.exchange(
+                urlDaApi + RESOURCE + "/ano/" + ano, HttpMethod.GET, null, AnoDeRepasse.class);
 
-        return dadosDoGraficoResponseEntity.getBody();
+        return anoDeRepasseEntity.getBody();
+
     }
 }

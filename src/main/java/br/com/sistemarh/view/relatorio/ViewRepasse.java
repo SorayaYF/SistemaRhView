@@ -2,21 +2,31 @@ package br.com.sistemarh.view.relatorio;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Base64;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import br.com.sistemarh.client.RepasseClient;
+import br.com.sistemarh.dto.Repasse;
 import jakarta.validation.constraints.NotBlank;
+import net.sf.jasperreports.engine.JRException;
 
 @Component
 public class ViewRepasse extends JFrame implements Serializable {
@@ -26,30 +36,50 @@ public class ViewRepasse extends JFrame implements Serializable {
 	
 	private JTextField edtAno;
 	
-	private JComboBox<String> cbMes;
+	private JTextField edtMes;
 	
 	private String tokenDeAcesso;
+	
+	@Autowired
+	private RepasseClient repasseClient;
 	
 	public void mostrarTela(
 			@NotBlank(message = "O token de acesso é obrigatório")
 			String tokenDeAcesso) {
 		this.setVisible(true);
 		this.tokenDeAcesso = tokenDeAcesso;
+		this.repasseClient.setTokenDeAcesso(tokenDeAcesso);
 	}
 	
-	private static String obterNomeMes(int numeroMes) {
-	    String[] nomesMeses = {
-	            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-	            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-	    };
-	    return nomesMeses[numeroMes - 1];
-	}
-	
-	private void preencherComboBoxMes() {
-	    cbMes.removeAllItems();
-	    for (int i = 1; i <= 12; i++) {
-	        cbMes.addItem(obterNomeMes(i));
+	private void gerarRelatorio() throws IOException, JRException {
+	    String anoText = edtAno.getText();
+	    String mesText = edtMes.getText();
+
+	    if (anoText.isEmpty()) {
+	        JOptionPane.showMessageDialog(ViewRepasse.this, "Por favor, insira o ano.", "Erro", JOptionPane.ERROR_MESSAGE);
+	        return;
 	    }
+
+	    int ano = Integer.parseInt(anoText);
+	    
+	    int mes = Integer.parseInt(mesText);
+
+	    Repasse relatorio = repasseClient.obterRepasse(ano, mes);
+
+	    if (relatorio == null) {
+	        JOptionPane.showMessageDialog(ViewRepasse.this, "Não foi possível obter o relatório.", "Erro", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+
+	    byte[] relatorioPDF = Base64.getDecoder().decode(relatorio.getConteudoBase64());
+
+	    String nomeArquivo = "relatorio_" + ano + ".pdf";
+	    try (FileOutputStream fos = new FileOutputStream(nomeArquivo)) {
+	        fos.write(relatorioPDF);
+	    }
+
+	    JOptionPane.showMessageDialog(ViewRepasse.this, "Relatório gerado com sucesso. O arquivo foi salvo como " + nomeArquivo, 
+	    		"Sucesso", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**
@@ -94,9 +124,23 @@ public class ViewRepasse extends JFrame implements Serializable {
 		lblMs.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblMs.setBackground(new Color(0, 47, 109));
 		
-		cbMes = new JComboBox<String>();
-		cbMes.setBounds(66, 59, 86, 22);
-		panel_1.add(cbMes);
+		edtMes = new JTextField();
+		edtMes.setBounds(66, 60, 86, 20);
+		panel_1.add(edtMes);
+		edtMes.setColumns(10);
+		
+		JButton btnGerar = new JButton("Gerar");
+		btnGerar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					gerarRelatorio();
+				} catch (IOException | JRException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnGerar.setBounds(290, 38, 89, 23);
+		panel_1.add(btnGerar);
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(new Color(0, 45, 109));

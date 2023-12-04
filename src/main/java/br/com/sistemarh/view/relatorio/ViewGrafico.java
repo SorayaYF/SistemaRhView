@@ -22,7 +22,6 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import br.com.sistemarh.client.DadosDoGraficoClient;
 import br.com.sistemarh.client.GraficoClient;
 import br.com.sistemarh.dto.AnoDeRepasse;
 import br.com.sistemarh.dto.MesDeRepasse;
@@ -30,7 +29,7 @@ import br.com.sistemarh.view.componentes.grafico.GraficoDeBarras;
 import jakarta.validation.constraints.NotBlank;
 
 @Component
-public class ViewDadosDoGrafico extends JFrame implements Serializable {
+public class ViewGrafico extends JFrame implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -43,17 +42,14 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 	private String tokenDeAcesso;
 	
 	@Autowired
-	private GraficoClient dadosDoGraficoClient;
-	
-	@Autowired
-	private DadosDoGraficoClient graficoClient;
+	private GraficoClient graficoClient;
 	
 	public void mostrarTela(
 			@NotBlank(message = "O token de acesso é obrigatório")
 			String tokenDeAcesso) {
 		this.setVisible(true);
 		this.tokenDeAcesso = tokenDeAcesso;
-		this.dadosDoGraficoClient.setTokenDeAcesso(tokenDeAcesso);
+		this.graficoClient.setTokenDeAcesso(tokenDeAcesso);
 	} 
 	
 	private void plotarGraficoPor(AnoDeRepasse anoDeRepasse) {
@@ -63,11 +59,11 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 		GraficoDeBarras grafico = new GraficoDeBarras();
 		
 		for (MesDeRepasse mesDeRepasse : anoDeRepasse.getMeses()) {
-			dataset.addValue(mesDeRepasse.getValorRepassado(), mesDeRepasse.getNome(), "Valor Pago(R$)");
+			dataset.addValue(mesDeRepasse.getValorRepassado(), mesDeRepasse.getNome(), "Mês");
 		}
 		
 	    ChartPanel pnlBarras = grafico.plotarPor(dataset,
-	            "Pagamentos Mensais", "", "Mês", 914, 450, 0, 0);
+	            "Pagamentos Mensais", "", "Valor Pago(R$)", 914, 450, 0, 0);
 
 		pnlGrafico.removeAll();
 	    pnlGrafico.add(pnlBarras);
@@ -77,12 +73,10 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 	}
 	
 	private AnoDeRepasse obterDadosDoGrafico(Integer ano) {
-		//Só existe um endpoint que puxa por ano
-		//Removam a feature de gerar por semana o prazo não permite mais
 		return graficoClient.obterAnoDeRepassePor(ano);			
 	}
 
-	public ViewDadosDoGrafico() {
+	public ViewGrafico() {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 950, 600);
@@ -107,6 +101,11 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 		    public void actionPerformed(ActionEvent e) {
 		    	
 				try {
+				    String anoTexto = edtAno.getText();
+
+				    if (anoTexto.isEmpty()) {
+				        throw new IllegalArgumentException("O ano não pode estar vazio. Por favor, insira um ano válido.");
+				    }
 					Integer anoSelecionado = Integer.parseInt(edtAno.getText());
 			        AnoDeRepasse anoDeRepasse = obterDadosDoGrafico(anoSelecionado);
 			        plotarGraficoPor(anoDeRepasse);
@@ -144,7 +143,7 @@ public class ViewDadosDoGrafico extends JFrame implements Serializable {
 		edtAno.setColumns(10);
 		
 		JLabel lblNewLabel_1 = new JLabel("");
-		lblNewLabel_1.setIcon(new ImageIcon(ViewDadosDoGrafico.class.getResource("/br/com/sistemarh/view/componentes/img/IconeEntregadorViewPrincipal.png")));
+		lblNewLabel_1.setIcon(new ImageIcon(ViewGrafico.class.getResource("/br/com/sistemarh/view/componentes/img/IconeEntregadorViewPrincipal.png")));
 		lblNewLabel_1.setBounds(29, 28, 51, 51);
 		contentPane.add(lblNewLabel_1);
 		

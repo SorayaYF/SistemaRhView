@@ -97,10 +97,14 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 	
 	private void listarEntregadores(int pagina) {
 		try {
-			paginacao = entregadorClient.listarPor(edtNome.getText(), edtCNH.getText(), edtCPF.getText(), edtTelefone.getText(), pagina);			
-			TabelaEntregadores model = new TabelaEntregadores(paginacao.getListagem());
-			tbEntregadores.setModel(model);			
-			configurarTabela();
+	        if (edtNome.getText().isEmpty()) {
+	        	 throw new IllegalArgumentException("O campo 'Nome' não pode estar vazio");
+	        } else {
+				paginacao = entregadorClient.listarPor(edtNome.getText(), edtCNH.getText(), edtCPF.getText(), edtTelefone.getText(), pagina);			
+				TabelaEntregadores model = new TabelaEntregadores(paginacao.getListagem());
+				tbEntregadores.setModel(model);			
+				configurarTabela();	        	
+	        }
 		}catch (ConstraintViolationException cve) {
 			StringBuilder msgErro = new StringBuilder("Os seguintes erros ocorreram:\n");			
 			for (ConstraintViolation<?> cv : cve.getConstraintViolations()) {
@@ -397,10 +401,6 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 		});
 		btnPrimeiro.setBounds(314, 288, 49, 23);
 		pnlRegistros.add(btnPrimeiro);
-		
-		JButton btnPrimeiro_1 = new JButton("<<");
-		btnPrimeiro_1.setBounds(432, 288, 49, 23);
-		pnlRegistros.add(btnPrimeiro_1);
 		
 		JButton btnAnterior = new JButton("<");
 		btnAnterior.addActionListener(new ActionListener() {

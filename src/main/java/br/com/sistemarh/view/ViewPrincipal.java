@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.sistemarh.view.entregador.ViewConsultaEntregador;
-import br.com.sistemarh.view.relatorio.ViewDadosDoGrafico;
+import br.com.sistemarh.view.relatorio.ViewGrafico;
 import br.com.sistemarh.view.relatorio.ViewRepasse;
 import jakarta.validation.constraints.NotBlank;
 
@@ -34,7 +34,7 @@ public class ViewPrincipal extends JFrame implements Serializable {
 	private ViewConsultaEntregador viewConsultaEntregador;
 
 	@Autowired
-	private ViewDadosDoGrafico viewDadosDoGrafico;
+	private ViewGrafico viewDadosDoGrafico;
 
 	@Autowired
 	private ViewRepasse viewRepasse;

@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import br.com.sistemarh.dto.DadosDoGrafico;
 import br.com.sistemarh.dto.Repasse;
 import jakarta.validation.constraints.NotNull;
 import lombok.Setter;
@@ -50,10 +49,10 @@ public class RepasseClient {
         
         HttpEntity<Map<String, Object>> request = new HttpEntity<Map<String, Object>>(body.toMap(), aplicador.aplicar(tokenDeAcesso));
 
-        ResponseEntity<Repasse> dadosDoGraficoResponseEntity = httpClient.exchange(
+        ResponseEntity<Repasse> repasseResponseEntity = httpClient.exchange(
                 urlDaApi + RESOURCE, HttpMethod.POST, request, Repasse.class);
 
-        return dadosDoGraficoResponseEntity.getBody();
+        return repasseResponseEntity.getBody();
     }
 
 }

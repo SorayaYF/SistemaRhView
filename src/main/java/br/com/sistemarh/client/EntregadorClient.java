@@ -60,7 +60,7 @@ public class EntregadorClient {
 	
 	public Entregador atualizar(
 			@Valid
-			@NotNull(message = "A entregador salva não pode ser nula")
+			@NotNull(message = "O entregador salvo não pode ser nulo")
 			Entregador entregadorSalvo) {
 		
 		HttpEntity<Entregador> request = new HttpEntity<Entregador>(
