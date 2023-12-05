@@ -72,7 +72,7 @@ public class ViewCadastroEntregador extends JFrame {
 	
 	public void colocarEmModoDeInsercao(
 			@NotBlank(message = "O token de acesso é obrigatório")
-			String tokenDeAcesso) {
+			String tokenDeAcesso) {		
 		this.setVisible(true);
 		this.tokenDeAcesso = tokenDeAcesso;
 		this.entregadorClient.setTokenDeAcesso(tokenDeAcesso);
@@ -282,7 +282,6 @@ public class ViewCadastroEntregador extends JFrame {
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				entregador = new Entregador();
 				entregador.setNome(edtNome.getText());
 				entregador.setCpf(edtCPF.getText());			
 				entregador.setNumeroHabilitacao(edtCNH.getText());

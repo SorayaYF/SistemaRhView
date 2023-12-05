@@ -87,7 +87,7 @@ public class ViewRepasse extends JFrame implements Serializable {
 	        File fileToSave = fileChooser.getSelectedFile();
 
 	        try (FileOutputStream fos = new FileOutputStream(fileToSave)) {
-	            fos.write(Base64.getDecoder().decode(relatorio.toString()));
+	            fos.write(Base64.getDecoder().decode(relatorio.getRelatorio()));
 	            JOptionPane.showMessageDialog(ViewRepasse.this, "Relatório gerado com sucesso. O arquivo foi salvo em " + fileToSave.getAbsolutePath(), 
 	                    "Sucesso", JOptionPane.INFORMATION_MESSAGE);
 	        } catch (IOException e) {

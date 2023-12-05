@@ -228,7 +228,7 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 		panelAcoes.setForeground(new Color(255, 255, 255));
 		panelAcoes.setBackground(new Color(0, 47, 109));
 		panelAcoes.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "A\u00E7\u00F5es", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(255, 255, 255)));
-		panelAcoes.setBounds(10, 502, 580, 48);
+		panelAcoes.setBounds(10, 502, 500, 48);
 		contentPane.add(panelAcoes);
 		panelAcoes.setLayout(null);
 		
@@ -248,7 +248,7 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 		JButton btnNovo = new JButton("Novo");
 		btnNovo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				viewCadastro.setVisible(true);
+				viewCadastro.colocarEmModoDeInsercao(tokenDeAcesso);
 			}
 		});
 		btnNovo.setBounds(120, 16, 100, 25);
@@ -265,8 +265,12 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 				if (linhaSelecionada >= 0) {
 					TabelaEntregadores model = (TabelaEntregadores)tbEntregadores.getModel();
 					Entregador entregadorSelecionado = model.getPor(linhaSelecionada);
-					viewCadastro.colocarEmModoDeEdicao(tokenDeAcesso, entregadorSelecionado);
-					dispose();
+					if(entregadorSelecionado.getStatus() == Status.I) {
+						JOptionPane.showMessageDialog(contentPane, "Alteração inválida. Escolha um entregador ativo.", "Erro", JOptionPane.ERROR_MESSAGE);
+					} else {
+						viewCadastro.colocarEmModoDeEdicao(tokenDeAcesso, entregadorSelecionado);
+						dispose();
+					}
 				}else {
 					JOptionPane.showMessageDialog(contentPane, "Selecione um entregador para edição");
 				}
@@ -279,7 +283,7 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 		btnAlterar.setBorderPainted(false);
 		btnAlterar.setBackground(new Color(0, 47, 109));
 		
-		JButton btnDesativar = new JButton("Desativar");
+		JButton btnDesativar = new JButton("Desativar/Ativar");
 		btnDesativar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int linhaSelecionada = tbEntregadores.getSelectedRow();
@@ -301,7 +305,7 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 							entregadorClient.atualizarPor(entregadorSelecionado.getId(), novoStatus);
 							listarEntregadores(paginaAtual);
 							JOptionPane.showMessageDialog(contentPane, "O status do entregador foi atualizado com sucesso", 
-									"Sucesso na Desativação", JOptionPane.INFORMATION_MESSAGE);
+									"Sucesso na mudança do Status", JOptionPane.INFORMATION_MESSAGE);
 						}catch (ConstraintViolationException cve) {
 							StringBuilder msgErro = new StringBuilder("Os seguintes erros ocorreram:\n");			
 							for (ConstraintViolation<?> cv : cve.getConstraintViolations()) {
@@ -322,62 +326,13 @@ public class ViewConsultaEntregador extends JFrame implements Serializable {
 				
 			}				
 		});
-		btnDesativar.setBounds(340, 17, 100, 25);
+		btnDesativar.setBounds(340, 17, 150, 25);
 		panelAcoes.add(btnDesativar);
-		btnDesativar.setToolTipText("Clique aqui para desativar um entregador existente");
+		btnDesativar.setToolTipText("Clique aqui para desativar ou ativar um entregador existente");
 		btnDesativar.setForeground(Color.WHITE);
 		btnDesativar.setBorderPainted(false);
 		btnDesativar.setBackground(new Color(0, 47, 109));
 		
-		JButton btnAtivar = new JButton("Ativar");
-		btnAtivar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int linhaSelecionada = tbEntregadores.getSelectedRow();
-				
-				if (linhaSelecionada >= 0) {
-
-					int opcao = JOptionPane.showConfirmDialog(contentPane, 
-							"Deseja atualizar o status do entregador selecionado?", 
-							"Atualização", JOptionPane.YES_NO_OPTION);
-
-					boolean isConfirmacaoRealizada = opcao == 0;
-
-					if (isConfirmacaoRealizada) {
-						
-						try {
-							TabelaEntregadores model = (TabelaEntregadores)tbEntregadores.getModel();
-							Entregador entregadorSelecionado = model.getPor(linhaSelecionada);
-							Status novoStatus = entregadorSelecionado.isInativo() ? Status.A : Status.I;
-							entregadorClient.atualizarPor(entregadorSelecionado.getId(), novoStatus);
-							listarEntregadores(paginaAtual);
-							JOptionPane.showMessageDialog(contentPane, "O status do entregador foi atualizado com sucesso", 
-									"Sucesso na Ativação", JOptionPane.INFORMATION_MESSAGE);
-						}catch (ConstraintViolationException cve) {
-							StringBuilder msgErro = new StringBuilder("Os seguintes erros ocorreram:\n");			
-							for (ConstraintViolation<?> cv : cve.getConstraintViolations()) {
-								msgErro.append("  -").append(cv.getMessage()).append("\n");
-							}
-							JOptionPane.showMessageDialog(contentPane, msgErro, 
-									"Falha na Listagem", JOptionPane.ERROR_MESSAGE);
-						}catch (Exception ex) {
-							JOptionPane.showMessageDialog(contentPane, ex.getMessage(),
-									"Erro na Atualização", JOptionPane.ERROR_MESSAGE);
-						}
-						
-					}
-
-				}else {
-					JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para ativação");
-				}
-				
-			}				
-		});
-		btnAtivar.setBounds(450, 17, 100, 25);
-		panelAcoes.add(btnAtivar);
-		btnAtivar.setToolTipText("Clique aqui para ativar um entregador existente");
-		btnAtivar.setForeground(Color.WHITE);
-		btnAtivar.setBorderPainted(false);
-		btnAtivar.setBackground(new Color(0, 47, 109));
 		
 		pnlRegistros = new JPanel();
 		pnlRegistros.setForeground(new Color(255, 255, 255));

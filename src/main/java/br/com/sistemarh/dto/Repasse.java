@@ -17,5 +17,7 @@ public class Repasse {
     @Max(value = 12, message = "O mês deve ser menor ou igual a 12")
     @Positive(message = "O mês deve ser positivo")
     private Integer mes;
+    
+    private String relatorio;
 
 }
